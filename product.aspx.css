@@ -1,0 +1,56 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Data;
+using System.Data.SqlClient;
+
+namespace DuongVanTrongDai_2906
+{
+    public partial class product : System.Web.UI.Page
+    {
+        xuly kn = new xuly();
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (Page.IsPostBack) return;
+            string q;
+            if(Context.Items["mldt"]== null)
+            {
+                q = "select * from DIENTHOAI";
+            }
+            else
+            {
+                string maloaidienthoai = Context.Items["mldt"].ToString();
+                q = "select * from DIENTHOAI where MaLoaiDT = '" + maloaidienthoai + "'";
+            }
+            try
+            {
+                this.DataList1.DataSource = kn.GetData(q);
+                this.DataList1.DataBind();
+
+                TongSoLuong();
+            }
+            catch (Exception ex)
+            {
+                Response.Write(ex.Message);
+            }
+        }
+        void TongSoLuong()
+        {
+            string sql =
+                "select SUM(SoLuong) as TongSL from DIENTHOAI";
+
+            DataTable dt = kn.GetData(sql);
+
+            Label lbl =
+                (Label)Master.FindControl("lblTong");
+
+            lbl.Text =
+                "Tổng số lượng điện thoại: "
+                + dt.Rows[0]["TongSL"].ToString();
+        }
+    }
+}
